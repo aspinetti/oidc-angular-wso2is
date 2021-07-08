@@ -41,6 +41,17 @@ export class AuthService {
     private http: HttpClient,
     private router: Router
   ) {
+     // WSO2 IS required client_id and redirect_uri in checkSession call
+    const originalCheckSession = () => OAuthService.prototype.checkSession;
+	  OAuthService.prototype.checkSession = function () {
+
+    this.document.getElementById(
+        this.sessionCheckIFrameName
+      ).src = this.sessionCheckIFrameUrl + '?client_id=' +  this.clientId + '&redirect_uri=' + this.redirectUri;
+
+    originalCheckSession();
+    };
+      
     // Useful for debugging:
     this.oauthService.events.subscribe(event => {
       if (event instanceof OAuthErrorEvent) {
